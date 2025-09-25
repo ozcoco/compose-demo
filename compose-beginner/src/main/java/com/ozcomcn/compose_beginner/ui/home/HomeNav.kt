@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entry
 import androidx.navigation3.runtime.entryProvider
@@ -37,6 +38,30 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data object Checkbox : Screen // 复选框
+
+    @Serializable
+    data object Chips : Screen //提示汽包
+
+    @Serializable
+    data object DateTimePicker : Screen //日期时间选择器
+
+    @Serializable
+    data object Dialogs : Screen //对话框
+
+    @Serializable
+    data object Divider : Screen //分隔线
+
+    @Serializable
+    data object Lists : Screen //列表
+
+    @Serializable
+    data object LoadingProgress : Screen //加载进度条
+
+    @Serializable
+    data object Menus : Screen //菜单
+
+    @Serializable
+    data object Sheets : Screen //导航
 }
 
 
@@ -45,7 +70,7 @@ sealed interface Screen : NavKey {
 @Composable
 fun HomeNav(
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val backStack = homeViewModel.navigator.backStack
     NavDisplay(
@@ -74,6 +99,30 @@ fun HomeNav(
                 CarouselScreen()
             }
             entry<Screen.Checkbox> {
+                CheckboxScreen()
+            }
+            entry<Screen.Chips> {
+                CheckboxScreen()
+            }
+            entry<Screen.DateTimePicker> {
+                CheckboxScreen()
+            }
+            entry<Screen.Dialogs> {
+                CheckboxScreen()
+            }
+            entry<Screen.Divider> {
+                CheckboxScreen()
+            }
+            entry<Screen.Lists> {
+                CheckboxScreen()
+            }
+            entry<Screen.LoadingProgress> {
+                CheckboxScreen()
+            }
+            entry<Screen.Menus> {
+                CheckboxScreen()
+            }
+            entry<Screen.Sheets> {
                 CheckboxScreen()
             }
         })

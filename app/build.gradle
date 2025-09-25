@@ -1,0 +1,121 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+//tasks.register('conanInstall') {
+//    def conanExecutable = "conan" // define the path to your conan installation
+//    def buildDir = new File("app/build")
+//    buildDir.mkdirs()
+//    ["Debug", "Release"].each { String build_type ->
+//        ["armv7", "armv8", "x86", "x86_64"].each { String arch ->
+//            def cmd = conanExecutable + " install " +
+//                    "../src/main/cpp --profile android -s build_type=" + build_type + " -s arch=" + arch +
+//                    " --build missing -c tools.cmake.cmake_layout:build_folder_vars=['settings.arch']"
+//            print(">> ${cmd} \n")
+//
+//            def sout = new StringBuilder(), serr = new StringBuilder()
+//            def proc = cmd.execute(null, buildDir)
+//            proc.consumeProcessOutput(sout, serr)
+//            proc.waitFor()
+//            println "$sout $serr"
+//            if (proc.exitValue() != 0) {
+//                throw new Exception("out> $sout err> $serr" + "\nCommand: ${cmd}")
+//            }
+//        }
+//    }
+//}
+
+android {
+    namespace 'com.ozcomcn.modellbox'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.ozcomcn.modellbox"
+        minSdk 29
+        targetSdk 36
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags '-std=c++17', '-v'
+                arguments "-DANDROID_STL=c++_shared", "-DLLAMA_ANDROID=ON"
+            }
+        }
+        ndk {
+            abiFilters 'arm64-v8a' // 只编译 arm64
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '4.1.1'
+            // 指定CMake构建目录
+            buildStagingDirectory file("src/main/cpp/build")
+//            buildDirectory file("src/main/cpp/build_arm64")
+        }
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    ndkVersion '28.2.13676358'
+    buildToolsVersion '36.0.0'
+}
+
+
+// 👇 添加 Conan 安装任务（Windows 适配版）
+//tasks.register('conanInstallArm64', Exec) {
+//    def buildDir = "src/main/cpp/build"
+//    def profile = "android-arm64"
+//    // 创建目录
+//    doFirst {
+//        mkdir buildDir
+//    }
+//    workingDir buildDir
+//    // Windows 上 conan 命令通常在 PATH 中，直接调用
+//    commandLine 'conan', 'install', '../conanfile.txt',
+//            "--profile=${profile}",
+//            "--output-folder=./${profile.replace("android-","")}",
+//            '--build=missing'
+//    // 输出调试信息
+//    standardOutput = new ByteArrayOutputStream()
+//    ext.output = { return standardOutput.toString() }
+//    logging.captureStandardOutput LogLevel.INFO
+//}
+//
+//// 让 externalNativeBuild 依赖 conanInstall
+//tasks.configureEach { task ->
+//    if (task.name.startsWith('externalNativeBuild')) {
+//        task.dependsOn conanInstallArm64
+//    }
+//}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    implementation libs.androidx.constraintlayout
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+}

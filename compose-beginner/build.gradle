@@ -33,9 +33,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = '11'
+        freeCompilerArgs = ['-XXLanguage:+PropertyParamAnnotationDefaultTargetMode']
     }
     buildFeatures {
         compose true
+    }
+    hilt {
+        enableAggregatingTask = true
     }
 }
 

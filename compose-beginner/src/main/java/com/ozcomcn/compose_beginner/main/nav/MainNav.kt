@@ -3,7 +3,9 @@ package com.ozcomcn.compose_beginner.main.nav
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -89,10 +91,11 @@ fun MainNav(
                                 drawerState.close()
                             }
                         }, modifier = Modifier.padding(
-                            start = 8.dp, end = 16.dp, top = 8.dp
+                            start = 8.dp, end = 16.dp
                         )
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                 NavigationDrawerItem(
                     icon = {
@@ -101,7 +104,7 @@ fun MainNav(
                             contentDescription = "主题模式"
                         )
                     }, label = { Text("主题模式") }, selected = false, onClick = {
-                            //
+                        //
                     }, modifier = Modifier.padding(
                         start = 8.dp, end = 16.dp, top = 8.dp
                     )
@@ -113,7 +116,7 @@ fun MainNav(
                             contentDescription = "设置"
                         )
                     }, label = { Text("设置") }, selected = false, onClick = {
-                           //
+                        //
                     }, modifier = Modifier.padding(
                         start = 8.dp, end = 16.dp, top = 8.dp
                     )

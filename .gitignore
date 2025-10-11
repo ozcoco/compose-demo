@@ -14,3 +14,4 @@
 .cxx
 local.properties
 /llama.cpp
+/.idea/deviceManager.xml

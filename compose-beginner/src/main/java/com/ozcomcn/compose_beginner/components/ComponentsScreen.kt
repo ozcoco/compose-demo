@@ -69,7 +69,7 @@ fun ComponentItem(
             content = {
                 AsyncImage(
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     model = itemData.imgUrl,
                     contentDescription = itemData.desc
                 )

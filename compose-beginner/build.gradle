@@ -24,7 +24,10 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'retrofit2.pro', 'okhttp3.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -88,4 +91,15 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.converter.protobuf)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    // OkHttp
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    // Gson
+    implementation(libs.gson)
 }

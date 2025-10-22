@@ -102,4 +102,11 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     // Gson
     implementation(libs.gson)
+    // WorkManager
+    implementation(libs.workManager)
+    implementation(libs.workManager.work.gcm)
+    implementation(libs.workManager.work.testing)
+    implementation(libs.workManager.work.multiprocess)
+    // App Startup
+    implementation(libs.appStartup)
 }

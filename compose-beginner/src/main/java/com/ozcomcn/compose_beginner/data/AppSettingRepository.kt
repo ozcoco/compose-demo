@@ -1,11 +1,11 @@
 package com.ozcomcn.compose_beginner.data
 
-import com.ozcomcn.compose_beginner.data.model.AppSetting
+import com.ozcomcn.compose_beginner.data.AppSettingKeys
 import com.ozcomcn.compose_beginner.data.source.DataStoreManager
 
 class AppSettingRepository(private val dataStore: DataStoreManager) {
-    fun isDarkTheme() = dataStore.read(AppSetting.IS_DARK_THEME, false)
+    fun isDarkTheme() = dataStore.read(AppSettingKeys.IS_DARK_THEME, false)
     suspend fun setDarkTheme(isDarkTheme: Boolean) {
-        dataStore.save(AppSetting.IS_DARK_THEME, isDarkTheme)
+        dataStore.save(AppSettingKeys.IS_DARK_THEME, isDarkTheme)
     }
 }

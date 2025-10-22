@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("app_settings")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore("app_settings")
 
 class DataStoreManager @Inject constructor(context: Context) {
 

@@ -26,7 +26,7 @@ object HttpModule {
     @Singleton
     @Provides
     fun providesDebugBaseUrl(): String {
-        return "https://api.github.com/"
+        return "http://192.168.31.234/"
     }
 
     @ReleaseQualifier

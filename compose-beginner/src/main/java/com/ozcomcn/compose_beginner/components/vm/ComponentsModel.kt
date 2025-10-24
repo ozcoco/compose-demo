@@ -11,10 +11,13 @@ import com.ozcomcn.compose_beginner.base.nav.Navigator
 import com.ozcomcn.compose_beginner.base.vm.BaseViewModel
 import com.ozcomcn.compose_beginner.components.di.qualifier.ComponentsNavQualifier
 import com.ozcomcn.compose_beginner.data.ChatRepository
-import com.ozcomcn.compose_beginner.data.model.ChatSend
+import com.ozcomcn.compose_beginner.data.model.ChatQuery
+import com.ozcomcn.compose_beginner.data.model.Resource
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,16 +49,25 @@ class ComponentsModel @Inject constructor(
     var uiState by mutableStateOf(ComponentsUiState())
         private set
 
+    private var chatJob: Job? = null
     fun sendMsg(query: String) {
-        viewModelScope.launch {
-            val chatSend = ChatSend(
+        chatJob?.cancel()
+        chatJob = viewModelScope.launch {
+            val query = ChatQuery(
                 user = "user",
                 query = query
             )
-            val response = chatRepository.getChatMessage(chatSend)
-            response.let {
-                uiState = uiState.copy(answer = response.answer)
-            }
+            chatRepository.chatMessage(query)
+                .map {
+                    when (it) {
+                        is Resource.Loading -> "Loading..."
+                        is Resource.Success -> it.data.answer
+                        is Resource.Error -> it.msg
+                    }
+                }.collect {
+                    uiState = uiState.copy(answer = it)
+                }
+
         }
     }
 
@@ -69,6 +81,11 @@ class ComponentsModel @Inject constructor(
                 sendMsg(event.query)
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        chatJob?.cancel()
     }
 
 }

@@ -1,13 +1,18 @@
 package com.ozcomcn.compose_beginner.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -39,11 +44,16 @@ fun TextFieldsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            uiState.answer,
-            modifier = Modifier
+            uiState.answer, modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .weight(4f)
+                .weight(6f)
+                .verticalScroll(rememberScrollState())
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary,
+                    RoundedCornerShape(4.dp)
+                )
         )
         TextField(
             value = text,
@@ -58,8 +68,7 @@ fun TextFieldsScreen(
         Button(
             onClick = {
                 onEvent(ComponentsEvent.SendMsg(text))
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .weight(1f)

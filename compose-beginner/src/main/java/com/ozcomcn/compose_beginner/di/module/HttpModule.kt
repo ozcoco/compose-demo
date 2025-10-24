@@ -15,6 +15,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.protobuf.ProtoConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -26,7 +28,7 @@ object HttpModule {
     @Singleton
     @Provides
     fun providesDebugBaseUrl(): String {
-        return "http://192.168.31.234/"
+        return "http://192.168.101.182/"
     }
 
     @ReleaseQualifier
@@ -63,8 +65,8 @@ object HttpModule {
             .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
-//            .addConverterFactory(MoshiConverterFactory.create())
-//            .addConverterFactory(ProtoConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(ProtoConverterFactory.create())
             .build()
     }
 

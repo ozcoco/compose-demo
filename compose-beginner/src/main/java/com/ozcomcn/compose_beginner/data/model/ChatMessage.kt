@@ -1,6 +1,6 @@
 package com.ozcomcn.compose_beginner.data.model
 
-data class ChatReceiver(
+data class ChatMessage(
     val answer: String,
     val conversation_id: String,
     val created_at: Int,

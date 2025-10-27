@@ -4,27 +4,38 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
@@ -33,18 +44,32 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleFloatingActionButton
 import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.animateFloatingActionButton
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,6 +78,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.semantics.CustomAccessibilityAction
@@ -95,6 +121,24 @@ enum class SimpleButtonsContent(
                 FABMenuContent()
                 FABMenuContent2()
             }
+        }),
+
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+    IconButton(
+        title = "IconButton", content = {
+            IconButtonContent()
+        }),
+
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+    SegmentedButton(
+        title = "IconButton", content = {
+            SegmentedButtonContent()
+        }),
+
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+    SplitButton(
+        title = "IconButton", content = {
+            SplitButtonContent()
         }),
 }
 
@@ -371,5 +415,166 @@ fun FABMenuContent() {
                 )
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3ExpressiveApi
+@Composable
+fun IconButtonContent() {
+    val constraintSet = ConstraintSet {
+        val iconButton = createRefFor("btn")
+        constrain(iconButton) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            end.linkTo(parent.end)
+            bottom.linkTo(parent.bottom)
+        }
+    }
+    ConstraintLayout(
+        constraintSet,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        IconButton(
+            onClick = { /* Do something */ },
+            modifier = Modifier.layoutId("btn"),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3ExpressiveApi
+@Composable
+fun SegmentedButtonContent() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Single choice
+        var selectedIndex by remember { mutableIntStateOf(0) }
+        val options = listOf("Day", "Month", "Week")
+        SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = options.size
+                    ),
+                    onClick = { selectedIndex = index },
+                    selected = index == selectedIndex,
+                    label = { Text(label) }
+                )
+            }
+        }
+        // Multi choice
+        val selectedOptions = remember {
+            mutableStateListOf(false, false, false)
+        }
+        val options2 = listOf("Walk", "Ride", "Drive")
+        MultiChoiceSegmentedButtonRow {
+            options2.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = options2.size
+                    ),
+                    checked = selectedOptions[index],
+                    onCheckedChange = {
+                        selectedOptions[index] = !selectedOptions[index]
+                    },
+                    icon = { SegmentedButtonDefaults.Icon(selectedOptions[index]) },
+                    label = {
+                        when (label) {
+                            "Walk" -> Icon(
+                                imageVector =
+                                    Icons.AutoMirrored.Filled.DirectionsWalk,
+                                contentDescription = "Directions Walk"
+                            )
+
+                            "Ride" -> Icon(
+                                imageVector =
+                                    Icons.Default.DirectionsBus,
+                                contentDescription = "Directions Bus"
+                            )
+
+                            "Drive" -> Icon(
+                                imageVector =
+                                    Icons.Default.DirectionsCar,
+                                contentDescription = "Directions Car"
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3ExpressiveApi
+@Composable
+fun SplitButtonContent() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        var checked by remember { mutableStateOf(false) }
+        SplitButtonLayout(
+            leadingButton = {
+                SplitButtonDefaults.LeadingButton(onClick = { /* Do Nothing */ }) {
+                    Icon(
+                        Icons.Filled.Edit,
+                        modifier = Modifier.size(SplitButtonDefaults.LeadingIconSize),
+                        contentDescription = "Localized description",
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("My Button")
+                }
+            },
+            trailingButton = {
+                val description = "Toggle Button"
+                // Icon-only trailing button should have a tooltip for a11y.
+                TooltipBox(
+                    positionProvider =
+                        TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+                    tooltip = { PlainTooltip { Text(description) } },
+                    state = rememberTooltipState(),
+                ) {
+                    SplitButtonDefaults.TrailingButton(
+                        checked = checked,
+                        onCheckedChange = { checked = it },
+                        modifier =
+                            Modifier.semantics {
+                                stateDescription = if (checked) "Expanded" else "Collapsed"
+                                contentDescription = description
+                            },
+                    ) {
+                        val rotation: Float by
+                        animateFloatAsState(
+                            targetValue = if (checked) 180f else 0f,
+                            label = "Trailing Icon Rotation",
+                        )
+                        Icon(
+                            Icons.Filled.KeyboardArrowDown,
+                            modifier =
+                                Modifier
+                                    .size(SplitButtonDefaults.TrailingIconSize)
+                                    .graphicsLayer {
+                                        this.rotationZ = rotation
+                                    },
+                            contentDescription = "Localized description",
+                        )
+                    }
+                }
+            },
+        )
     }
 }

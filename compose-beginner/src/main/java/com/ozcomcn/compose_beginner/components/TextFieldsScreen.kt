@@ -1,18 +1,15 @@
 package com.ozcomcn.compose_beginner.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -30,8 +27,7 @@ import com.ozcomcn.compose_beginner.components.vm.ComponentsModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TextFieldsScreen(
-    vm: ComponentsModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
+    vm: ComponentsModel = hiltViewModel()
 ) {
     val onEvent = { event: ComponentsEvent ->
         vm.onEvent(event)
@@ -39,7 +35,7 @@ fun TextFieldsScreen(
     val uiState = vm.uiState
     var text by remember { mutableStateOf("") }
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,13 +45,9 @@ fun TextFieldsScreen(
                 .padding(16.dp)
                 .weight(6f)
                 .verticalScroll(rememberScrollState())
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.primary,
-                    RoundedCornerShape(4.dp)
-                )
         )
         TextField(
+            suffix = { Text("${text.length}/100") },
             value = text,
             onValueChange = { text = it },
             label = { Text("请输入内容") },

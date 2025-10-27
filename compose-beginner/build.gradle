@@ -110,4 +110,7 @@ dependencies {
     implementation(libs.workManager.work.multiprocess)
     // App Startup
     implementation(libs.appStartup)
+    // paging3
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
 }

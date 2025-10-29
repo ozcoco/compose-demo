@@ -5,13 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -87,48 +88,49 @@ fun TextFieldsScreen(
         )
     }
     var text by remember { mutableStateOf("") }
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        msgList.forEach {
+        items(msgList) {
             if (it.isUser) {
                 RightChatItem(it)
             } else {
                 LeftChatItem(it)
             }
         }
-        Text(
-            uiState.answer,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .weight(6f)
-                .verticalScroll(rememberScrollState())
-        )
-        TextField(
-            suffix = { Text("${text.length}/100") },
-            value = text,
-            onValueChange = { text = it },
-            label = { Text("请输入内容") },
-            placeholder = { Text("例如：Hello") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .weight(1f)
-        )
-        Button(
-            onClick = {
-                onEvent(ComponentsEvent.SendMsg(text))
-            }, modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .weight(1f)
-        ) {
-            Text("发送")
+        item {
+            Text(
+                uiState.answer,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+        }
+        item {
+            TextField(
+                suffix = { Text("${text.length}/100") },
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("请输入内容") },
+                placeholder = { Text("例如：Hello") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+        }
+        item {
+            Button(
+                onClick = {
+                    onEvent(ComponentsEvent.SendMsg(text))
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("发送")
+            }
         }
     }
 }

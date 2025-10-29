@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,42 +53,53 @@ fun TextFieldsScreen(
     val msgList = remember {
         listOf(
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                isUser = true,
+                text = AnnotatedString("你好！今天天气不错呢～")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                text = AnnotatedString("是的呢，适合出去走走。你有什么计划吗？")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                isUser = true,
+                text = AnnotatedString("我想去公园散步，顺便拍些照片。\n你推荐哪个角度拍照比较好？")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                text = AnnotatedString("公园的湖边风景很美，特别是傍晚时分，光线柔和，非常适合拍照。")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                isUser = true,
+                text = AnnotatedString("听起来很棒！那我准备一下，傍晚的时候去湖边拍照。")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                text = AnnotatedString("记得带上相机和三脚架哦，这样能拍出更稳定清晰的照片。")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                isUser = true,
+                text = AnnotatedString("好的，谢谢提醒！我已经准备好设备了。\n拍完照我们可以一起看看照片吗？")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                text = AnnotatedString("当然可以啦！我很期待看到你拍的作品呢。")
             ),
             Message(
-                text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                isUser = true,
+                text = AnnotatedString("太好了，那我们约好明天见面分享照片吧！")
             ),
         )
     }
     var text by remember { mutableStateOf("") }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         msgList.forEach {
-            LeftChatItem(it)
+            if (it.isUser) {
+                RightChatItem(it)
+            } else {
+                LeftChatItem(it)
+            }
         }
         Text(
             uiState.answer,
@@ -129,7 +141,12 @@ fun LeftChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxx
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(16.dp),
+            .padding(
+                top = 16.dp,
+                bottom = 16.dp,
+                start = 16.dp,
+                end = 80.dp
+            ),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -160,19 +177,72 @@ fun LeftChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxx
                         bottomEnd = 45.dp
                     )
                 )
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .padding(
+                    top = 16.dp,
+                    bottom = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
         ) {
             Text(message.text.toString())
         }
     }
 }
 
+@Preview
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun RightChatItem(message: Message) {
-    Text(message.text)
+fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxxxxxxx\nxxxxxxxxxxxxx\nxxxxxx\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(
+                top = 16.dp,
+                bottom = 16.dp,
+                start = 80.dp,
+                end = 16.dp
+            ),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentHeight()
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 45.dp,
+                        topEnd = 45.dp,
+                        bottomStart = 45.dp,
+                        bottomEnd = 0.dp
+                    )
+                )
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(
+                    top = 16.dp,
+                    bottom = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+        ) {
+            Text(message.text.toString())
+        }
+        Column(
+            modifier = Modifier
+                .wrapContentSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(40.dp, 40.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                painter = painterResource(id = R.drawable.ic_header_robot2),
+                contentDescription = null
+            )
+        }
+    }
 }
-
-
-

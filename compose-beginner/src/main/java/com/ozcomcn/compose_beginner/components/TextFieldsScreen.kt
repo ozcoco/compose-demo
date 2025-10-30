@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,43 +65,10 @@ fun TextFieldsScreen(
         vm.onEvent(event)
     }
     val uiState = vm.uiState
-    val msgList = remember {
-        listOf(
-            Message(
-                isUser = true, text = AnnotatedString("你好！今天天气不错呢～")
-            ),
-            Message(
-                text = AnnotatedString("是的呢，适合出去走走。你有什么计划吗？")
-            ),
-            Message(
-                isUser = true,
-                text = AnnotatedString("我想去公园散步，顺便拍些照片。\n你推荐哪个角度拍照比较好？")
-            ),
-            Message(
-                text = AnnotatedString("公园的湖边风景很美，特别是傍晚时分，光线柔和，非常适合拍照。")
-            ),
-            Message(
-                isUser = true,
-                text = AnnotatedString("听起来很棒！那我准备一下，傍晚的时候去湖边拍照。")
-            ),
-            Message(
-                text = AnnotatedString("记得带上相机和三脚架哦，这样能拍出更稳定清晰的照片。")
-            ),
-            Message(
-                isUser = true,
-                text = AnnotatedString("好的，谢谢提醒！我已经准备好设备了。\n拍完照我们可以一起看看照片吗？")
-            ),
-            Message(
-                text = AnnotatedString("当然可以啦！我很期待看到你拍的作品呢。")
-            ),
-            Message(
-                isUser = true, text = AnnotatedString("太好了，那我们约好明天见面分享照片吧！")
-            ),
-        )
-    }
-    var text by remember { mutableStateOf("") }
+    val msgList = uiState.messages.data
     Column {
         LazyColumn(
+            reverseLayout = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
@@ -108,18 +76,8 @@ fun TextFieldsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(msgList) {
-                if (it.isUser) {
-                    RightChatItem(it)
-                } else {
-                    LeftChatItem(it)
-                }
-            }
-            item {
-                Text(
-                    uiState.answer, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
+                RightChatItem(Message(text = AnnotatedString(it.query)))
+                LeftChatItem(Message(text = AnnotatedString(it.answer)))
             }
         }
         InputContent(
@@ -128,6 +86,12 @@ fun TextFieldsScreen(
                 .wrapContentHeight(),
             onEvent = onEvent
         )
+    }
+
+    LaunchedEffect(
+        msgList
+    ) {
+        vm.getConversations()
     }
 }
 

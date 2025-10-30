@@ -7,10 +7,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -102,54 +99,35 @@ fun TextFieldsScreen(
         )
     }
     var text by remember { mutableStateOf("") }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        items(msgList) {
-            if (it.isUser) {
-                RightChatItem(it)
-            } else {
-                LeftChatItem(it)
+    Column {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            items(msgList) {
+                if (it.isUser) {
+                    RightChatItem(it)
+                } else {
+                    LeftChatItem(it)
+                }
+            }
+            item {
+                Text(
+                    uiState.answer, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
             }
         }
-        item {
-            Text(
-                uiState.answer, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-        }
-//        item {
-//            TextField(
-//                suffix = { Text("${text.length}/100") },
-//                value = text,
-//                onValueChange = { text = it },
-//                label = { Text("请输入内容") },
-//                placeholder = { Text("例如：Hello") },
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp)
-//            )
-//        }
-//        item {
-//            Button(
-//                onClick = {
-//                    onEvent(ComponentsEvent.SendMsg(text))
-//                }, modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(16.dp)
-//            ) {
-//                Text("发送")
-//            }
-//        }
-        item {
-            InputContent(onEvent)
-        }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        InputContent(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            onEvent = onEvent
+        )
     }
 }
 
@@ -251,7 +229,9 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
 
 @Preview
 @Composable
-fun InputContent(onEvent: (ComponentsEvent) -> Unit = {}) {
+fun InputContent(
+    modifier: Modifier = Modifier, onEvent: (ComponentsEvent) -> Unit = {}
+) {
     var text by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
     var hasFocus by remember { mutableStateOf(false) }
@@ -301,12 +281,12 @@ fun InputContent(onEvent: (ComponentsEvent) -> Unit = {}) {
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
         ),
-        textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Start),
         shape = RoundedCornerShape(24.dp),
         value = text,
         onValueChange = { text = it },
         label = { Text(if (isRecording) "按住说话" else "发消息或者按住说话") },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
             .combinedClickable(onClick = {}, onLongClick = { isRecording = true })

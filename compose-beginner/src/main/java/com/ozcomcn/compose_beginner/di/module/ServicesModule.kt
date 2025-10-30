@@ -4,6 +4,7 @@ import com.ozcomcn.compose_beginner.data.ChatRepository
 import com.ozcomcn.compose_beginner.data.services.ApiService
 import com.ozcomcn.compose_beginner.data.services.ChatService
 import com.ozcomcn.compose_beginner.data.source.ChatRemoteDataSource
+import com.ozcomcn.compose_beginner.di.qualifier.DebugAppKeyQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ServicesModule {
+
+    @DebugAppKeyQualifier
+    @Provides
+    fun provideDebugAppKey(): String {
+        return "app-cBVVmuqndG7qQgM6vs3r8gUo"
+    }
 
     @Provides
     @Singleton
@@ -37,8 +44,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideChatRepository(chatService: ChatService): ChatRepository {
-        return ChatRepository(ChatRemoteDataSource(chatService))
+    fun provideChatRepository(
+        @DebugAppKeyQualifier appKey: String,
+        chatService: ChatService
+    ): ChatRepository {
+        return ChatRepository(ChatRemoteDataSource(appKey, chatService))
     }
 
 }

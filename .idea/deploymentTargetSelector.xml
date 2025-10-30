@@ -6,7 +6,7 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="compose-beginner">
-        <option name="selectionMode" value="DIALOG" />
+        <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2025-10-30T03:53:27.316440500Z">
           <Target type="DEFAULT_BOOT">
             <handle>

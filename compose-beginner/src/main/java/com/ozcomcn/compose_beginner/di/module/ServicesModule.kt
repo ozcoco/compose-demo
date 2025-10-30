@@ -20,14 +20,16 @@ object ServicesModule {
 
     @DebugAppKeyQualifier
     @Provides
+    @Singleton
     fun provideDebugAppKey(): String {
-        return "app-cBVVmuqndG7qQgM6vs3r8gUo"
+        return "app-mD0wQ8WpXIayeV8Jnz8W598K"
     }
 
     @DebugUserQualifier
     @Provides
+    @Singleton
     fun provideDebugUser(): String {
-        return "user-test"
+        return "test"
     }
 
     @Provides

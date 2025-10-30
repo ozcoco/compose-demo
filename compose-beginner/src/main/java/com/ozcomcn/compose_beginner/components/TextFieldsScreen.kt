@@ -239,9 +239,9 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
                 .clip(
                     RoundedCornerShape(
                         topStart = 45.dp,
-                        topEnd = 45.dp,
+                        topEnd = 0.dp,
                         bottomStart = 45.dp,
-                        bottomEnd = 0.dp
+                        bottomEnd = 45.dp
                     )
                 )
                 .background(MaterialTheme.colorScheme.primaryContainer)
@@ -254,21 +254,21 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
         ) {
             Text(message.text.toString())
         }
-        Column(
-            modifier = Modifier
-                .wrapContentSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier
-                    .size(40.dp, 40.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-                painter = painterResource(id = R.drawable.ic_header_robot2),
-                contentDescription = null
-            )
-        }
+//        Column(
+//            modifier = Modifier
+//                .wrapContentSize(),
+//            verticalArrangement = Arrangement.Top,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Image(
+//                modifier = Modifier
+//                    .size(40.dp, 40.dp)
+//                    .clip(CircleShape),
+//                contentScale = ContentScale.Crop,
+//                painter = painterResource(id = R.drawable.ic_header_robot2),
+//                contentDescription = null
+//            )
+//        }
     }
 }
 

@@ -13,6 +13,7 @@ import com.ozcomcn.compose_beginner.components.di.qualifier.ComponentsNavQualifi
 import com.ozcomcn.compose_beginner.data.ChatRepository
 import com.ozcomcn.compose_beginner.data.model.ChatQuery
 import com.ozcomcn.compose_beginner.data.model.Resource
+import com.ozcomcn.compose_beginner.di.qualifier.DebugUserQualifier
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +47,10 @@ class ComponentsModel @Inject constructor(
     @Inject
     lateinit var navigator: Navigator
 
+    @DebugUserQualifier
+    @Inject
+    lateinit var user: String
+
     var uiState by mutableStateOf(ComponentsUiState())
         private set
 
@@ -55,7 +60,7 @@ class ComponentsModel @Inject constructor(
         chatJob?.cancel()
         chatJob = viewModelScope.launch {
             val query = ChatQuery(
-                user = "user",
+                user = user,
                 query = query
             )
             chatRepository.chatMessage(query)

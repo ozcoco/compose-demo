@@ -5,6 +5,7 @@ import com.ozcomcn.compose_beginner.data.services.ApiService
 import com.ozcomcn.compose_beginner.data.services.ChatService
 import com.ozcomcn.compose_beginner.data.source.ChatRemoteDataSource
 import com.ozcomcn.compose_beginner.di.qualifier.DebugAppKeyQualifier
+import com.ozcomcn.compose_beginner.di.qualifier.DebugUserQualifier
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +22,12 @@ object ServicesModule {
     @Provides
     fun provideDebugAppKey(): String {
         return "app-cBVVmuqndG7qQgM6vs3r8gUo"
+    }
+
+    @DebugUserQualifier
+    @Provides
+    fun provideDebugUser(): String {
+        return "user-test"
     }
 
     @Provides

@@ -3,6 +3,7 @@ package com.ozcomcn.compose_beginner.data.source
 import com.ozcomcn.compose_beginner.data.model.ChatMessage
 import com.ozcomcn.compose_beginner.data.model.ChatQuery
 import com.ozcomcn.compose_beginner.data.model.Conversations
+import com.ozcomcn.compose_beginner.data.model.Messages
 import com.ozcomcn.compose_beginner.data.model.Resource
 import com.ozcomcn.compose_beginner.data.requestHandle
 import com.ozcomcn.compose_beginner.data.services.ChatService
@@ -31,7 +32,7 @@ class ChatRemoteDataSource(
         user: String,
         lastId: String? = null,
         limit: Int = 20,
-        sortBy: String? = null,
+        sortBy: String = "created_at",
     ): Flow<Resource<Conversations>> {
         return requestHandle(
             dispatcher = dispatcher
@@ -42,6 +43,25 @@ class ChatRemoteDataSource(
                 lastId = lastId,
                 limit = limit,
                 sortBy = sortBy,
+            )
+        }
+    }
+
+    fun messages(
+        user: String,
+        conversation_id: String,
+        first_id: String? = null,
+        limit: Int = 20,
+    ): Flow<Resource<Messages>> {
+        return requestHandle(
+            dispatcher = dispatcher
+        ) {
+            chatService.messages(
+                appKey = appKey,
+                user = user,
+                conversation_id = conversation_id,
+                first_id = first_id,
+                limit = limit,
             )
         }
     }

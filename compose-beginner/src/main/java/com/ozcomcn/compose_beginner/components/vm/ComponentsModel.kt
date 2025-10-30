@@ -51,6 +51,7 @@ class ComponentsModel @Inject constructor(
 
     private var chatJob: Job? = null
     fun sendMsg(query: String) {
+        if (query.isBlank()) return
         chatJob?.cancel()
         chatJob = viewModelScope.launch {
             val query = ChatQuery(

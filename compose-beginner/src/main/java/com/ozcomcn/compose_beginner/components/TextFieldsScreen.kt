@@ -26,7 +26,6 @@ import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -34,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -71,8 +70,7 @@ fun TextFieldsScreen(
     val msgList = remember {
         listOf(
             Message(
-                isUser = true,
-                text = AnnotatedString("你好！今天天气不错呢～")
+                isUser = true, text = AnnotatedString("你好！今天天气不错呢～")
             ),
             Message(
                 text = AnnotatedString("是的呢，适合出去走走。你有什么计划吗？")
@@ -99,15 +97,13 @@ fun TextFieldsScreen(
                 text = AnnotatedString("当然可以啦！我很期待看到你拍的作品呢。")
             ),
             Message(
-                isUser = true,
-                text = AnnotatedString("太好了，那我们约好明天见面分享照片吧！")
+                isUser = true, text = AnnotatedString("太好了，那我们约好明天见面分享照片吧！")
             ),
         )
     }
     var text by remember { mutableStateOf("") }
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -120,37 +116,36 @@ fun TextFieldsScreen(
         }
         item {
             Text(
-                uiState.answer,
-                modifier = Modifier
+                uiState.answer, modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             )
         }
+//        item {
+//            TextField(
+//                suffix = { Text("${text.length}/100") },
+//                value = text,
+//                onValueChange = { text = it },
+//                label = { Text("请输入内容") },
+//                placeholder = { Text("例如：Hello") },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp)
+//            )
+//        }
+//        item {
+//            Button(
+//                onClick = {
+//                    onEvent(ComponentsEvent.SendMsg(text))
+//                }, modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp)
+//            ) {
+//                Text("发送")
+//            }
+//        }
         item {
-            TextField(
-                suffix = { Text("${text.length}/100") },
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("请输入内容") },
-                placeholder = { Text("例如：Hello") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-        }
-        item {
-            Button(
-                onClick = {
-                    onEvent(ComponentsEvent.SendMsg(text))
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("发送")
-            }
-        }
-        item {
-            InputContent()
+            InputContent(onEvent)
         }
         item {
             Spacer(modifier = Modifier.height(16.dp))
@@ -167,17 +162,13 @@ fun LeftChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxx
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(
-                top = 16.dp,
-                bottom = 16.dp,
-                start = 16.dp,
-                end = 80.dp
+                top = 16.dp, bottom = 16.dp, start = 16.dp, end = 80.dp
             ),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Column(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.wrapContentSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -196,18 +187,12 @@ fun LeftChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxx
                 .wrapContentHeight()
                 .clip(
                     RoundedCornerShape(
-                        topStart = 45.dp,
-                        topEnd = 45.dp,
-                        bottomStart = 0.dp,
-                        bottomEnd = 45.dp
+                        topStart = 45.dp, topEnd = 45.dp, bottomStart = 0.dp, bottomEnd = 45.dp
                     )
                 )
                 .background(MaterialTheme.colorScheme.secondaryContainer)
                 .padding(
-                    top = 16.dp,
-                    bottom = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
+                    top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp
                 )
         ) {
             Text(message.text.toString())
@@ -224,10 +209,7 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(
-                top = 16.dp,
-                bottom = 16.dp,
-                start = 80.dp,
-                end = 16.dp
+                top = 16.dp, bottom = 16.dp, start = 80.dp, end = 16.dp
             ),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -238,18 +220,12 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
                 .wrapContentHeight()
                 .clip(
                     RoundedCornerShape(
-                        topStart = 45.dp,
-                        topEnd = 0.dp,
-                        bottomStart = 45.dp,
-                        bottomEnd = 45.dp
+                        topStart = 45.dp, topEnd = 0.dp, bottomStart = 45.dp, bottomEnd = 45.dp
                     )
                 )
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(
-                    top = 16.dp,
-                    bottom = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
+                    top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp
                 )
         ) {
             Text(message.text.toString())
@@ -275,27 +251,32 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
 
 @Preview
 @Composable
-fun InputContent() {
+fun InputContent(onEvent: (ComponentsEvent) -> Unit = {}) {
     var text by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
     var hasFocus by remember { mutableStateOf(false) }
     var isLongPressing by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         readOnly = isRecording,
         leadingIcon = {
             IconButton(onClick = { isRecording = !isRecording }) {
                 Icon(
-                    imageVector = if (isRecording) Icons.Outlined.Mic else Icons.Outlined.Keyboard,
+                    imageVector = if (isRecording) Icons.Outlined.Keyboard else Icons.Outlined.Mic,
                     contentDescription = null
                 )
             }
         },
         trailingIcon = {
             if (hasFocus) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = {
+                    // 取消焦点
+                    focusManager.clearFocus()
+                    // 发送消息
+                    onEvent(ComponentsEvent.SendMsg(text))
+                }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Send,
-                        contentDescription = null
+                        imageVector = Icons.AutoMirrored.Outlined.Send, contentDescription = null
                     )
                 }
             } else {
@@ -306,22 +287,19 @@ fun InputContent() {
                 ) {
                     IconButton(onClick = { }) {
                         Icon(
-                            imageVector = Icons.Outlined.PhotoCamera,
-                            contentDescription = null
+                            imageVector = Icons.Outlined.PhotoCamera, contentDescription = null
                         )
                     }
                     IconButton(onClick = { }) {
                         Icon(
-                            imageVector = Icons.Outlined.AddCircleOutline,
-                            contentDescription = null
+                            imageVector = Icons.Outlined.AddCircleOutline, contentDescription = null
                         )
                     }
                 }
             }
         },
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done
+            keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
         ),
         textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
         shape = RoundedCornerShape(24.dp),
@@ -331,10 +309,7 @@ fun InputContent() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .onFocusChanged { hasFocus = it.isFocused }
-            .combinedClickable(
-                onClick = {},
-                onLongClick = { isRecording = true })
+            .combinedClickable(onClick = {}, onLongClick = { isRecording = true })
             .pointerInput(Unit) {
                 awaitPointerEventScope {
                     while (true) {
@@ -349,6 +324,7 @@ fun InputContent() {
                     }
                 }
             }
+            .onFocusChanged { hasFocus = it.isFocused }
 
     )
 }

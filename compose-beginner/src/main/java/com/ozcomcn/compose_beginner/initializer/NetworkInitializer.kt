@@ -12,6 +12,7 @@ class NetworkInitializer : Initializer<Unit> {
 
     override fun dependencies(): List<Class<out Initializer<*>?>?> {
         Log.d("NetworkInitializer", "--->NetworkInitializer dependencies")
-        return listOf(WorkManagerInitializer::class.java)
+//        return listOf(WorkManagerInitializer::class.java)
+        return emptyList()
     }
 }

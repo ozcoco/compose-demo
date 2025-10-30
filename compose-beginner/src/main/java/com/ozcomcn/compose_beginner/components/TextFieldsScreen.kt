@@ -1,7 +1,9 @@
 package com.ozcomcn.compose_beginner.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Mic
@@ -40,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -273,7 +278,10 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
 fun InputContent() {
     var text by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
+    var hasFocus by remember { mutableStateOf(false) }
+    var isLongPressing by remember { mutableStateOf(false) }
     OutlinedTextField(
+        readOnly = isRecording,
         leadingIcon = {
             IconButton(onClick = { isRecording = !isRecording }) {
                 Icon(
@@ -283,22 +291,31 @@ fun InputContent() {
             }
         },
         trailingIcon = {
-            Row(
-                modifier = Modifier.wrapContentSize(),
-                horizontalArrangement = Arrangement.spacedBy((-8).dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            if (hasFocus) {
                 IconButton(onClick = { }) {
                     Icon(
-                        imageVector = Icons.Outlined.PhotoCamera,
+                        imageVector = Icons.AutoMirrored.Outlined.Send,
                         contentDescription = null
                     )
                 }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Outlined.AddCircleOutline,
-                        contentDescription = null
-                    )
+            } else {
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    horizontalArrangement = Arrangement.spacedBy((-8).dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Outlined.PhotoCamera,
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Outlined.AddCircleOutline,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         },
@@ -310,9 +327,28 @@ fun InputContent() {
         shape = RoundedCornerShape(24.dp),
         value = text,
         onValueChange = { text = it },
-        label = { Text("发消息或者按住说话") },
+        label = { Text(if (isRecording) "按住说话" else "发消息或者按住说话") },
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .onFocusChanged { hasFocus = it.isFocused }
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { isRecording = true })
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (!isLongPressing && event.changes.any { it.pressed }) {
+                            isLongPressing = true
+                            Log.d("InputContent", "--->InputContent: 按下")
+                        } else {
+                            isLongPressing = false
+                            Log.d("InputContent", "--->InputContent: 松开")
+                        }
+                    }
+                }
+            }
+
     )
 }

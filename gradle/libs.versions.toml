@@ -33,7 +33,7 @@ foundation = "1.9.4"
 # Retrofit
 retrofit = "3.0.0"
 # OkHttp
-okhttp = "5.2.1"
+okhttp = "5.3.0"
 # Gson
 gson = "2.13.2"
 # WorkManager

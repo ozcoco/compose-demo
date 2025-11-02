@@ -76,8 +76,8 @@ fun TextFieldsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(msgList) {
-                RightChatItem(Message(text = AnnotatedString(it.query)))
                 LeftChatItem(Message(text = AnnotatedString(it.answer)))
+                RightChatItem(Message(text = AnnotatedString(it.query)))
             }
         }
         InputContent(
@@ -87,11 +87,10 @@ fun TextFieldsScreen(
             onEvent = onEvent
         )
     }
-
-    LaunchedEffect(
-        msgList
-    ) {
+    LaunchedEffect(uiState) {
+        // 获取会话列表
         vm.getConversations()
+        Log.d("TextFieldsScreen", "--->LaunchedEffect: 获取会话列表")
     }
 }
 
@@ -104,7 +103,7 @@ fun LeftChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nxx
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(
-                top = 16.dp, bottom = 16.dp, start = 16.dp, end = 80.dp
+                top = 16.dp, bottom = 16.dp, start = 16.dp, end = 40.dp
             ),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -216,8 +215,12 @@ fun InputContent(
                 IconButton(onClick = {
                     // 取消焦点
                     focusManager.clearFocus()
+                    // 不显示光标
+                    hasFocus = false
                     // 发送消息
                     onEvent(ComponentsEvent.SendMsg(text))
+                    // 清空输入框
+                    text = ""
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.Send, contentDescription = null

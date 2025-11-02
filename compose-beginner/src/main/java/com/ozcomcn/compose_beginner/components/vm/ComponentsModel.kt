@@ -1,5 +1,6 @@
 package com.ozcomcn.compose_beginner.components.vm
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -67,8 +68,9 @@ class ComponentsModel @Inject constructor(
 
 
     init {
+//        Log.d("ComponentsModel", "--->init: user=$user")
         // 获取用户会话列表
-        getConversations()
+//        getConversations()
     }
 
     /**
@@ -100,6 +102,8 @@ class ComponentsModel @Inject constructor(
             }.collect {
                 // 更新UI状态中的回答内容
                 uiState = uiState.copy(answer = it)
+                // 获取该会话的消息列表
+                getMessages(uiState.conversationId)
             }
 
         }
@@ -109,6 +113,7 @@ class ComponentsModel @Inject constructor(
      * 获取用户会话列表并更新UI状态
      */
     fun getConversations() {
+        Log.d("ComponentsModel", "--->getConversations")
         // 取消之前的会话任务
         conversationsJob?.cancel()
         // 启动新的会话任务
@@ -146,12 +151,17 @@ class ComponentsModel @Inject constructor(
      * @param conversationId 会话ID
      */
     fun getMessages(conversationId: String) {
+        Log.d("ComponentsModel", "--->getMessages: conversationId=$conversationId")
         // 取消之前的消息任务
         messagesJob?.cancel()
         // 启动新的消息任务
         messagesJob = viewModelScope.launch {
             // 获取会话消息列表并处理不同状态的响应
-            chatRepository.messages(user, conversationId).map {
+            chatRepository.messages(
+                user = user,
+                conversation_id = conversationId,
+                limit = 100,
+            ).map {
                 when (it) {
                     is Resource.Loading -> "Loading..."
                     is Resource.Success -> it.data
@@ -161,7 +171,13 @@ class ComponentsModel @Inject constructor(
                 // 更新UI状态中的消息列表
                 when {
                     it is Messages -> {
-                        uiState = uiState.copy(messages = it)
+                        uiState = uiState.copy(
+                            messages = it.copy(data = it.data.reversed())
+                        )
+                    }
+
+                    else -> {
+                        Log.d("ComponentsModel", "--->getMessages: else=$it")
                     }
                 }
             }

@@ -16,32 +16,29 @@ interface ChatService {
     @POST("v1/chat-messages")
     @Headers("Content-Type:application/json")
     suspend fun chatMessage(
-        appKey: String,
+        @Header("Authorization") authorization: String,
         @Body query: ChatQuery,
-        @Header("Authorization") authorization: String = "Bearer $appKey",
     ): ChatMessage
 
 
     @GET("v1/conversations")
 //    @Headers("Content-Type:application/json")
     suspend fun conversations(
-        appKey: String,
+        @Header("Authorization") authorization: String,
         @Query("user") user: String,
         @Query("last_id") lastId: String? = null,
         @Query("limit") limit: Int = 20,
         @Query("sort_by") sortBy: String = "created_at",
-        @Header("Authorization") authorization: String = "Bearer $appKey",
     ): Conversations
 
     @GET("v1/messages")
 //    @Headers("Content-Type:application/json")
     suspend fun messages(
-        appKey: String,
+        @Header("Authorization") authorization: String,
         @Query("user") user: String,
         @Query("conversation_id") conversation_id: String,
         @Query("first_id") first_id: String? = null,
         @Query("limit") limit: Int = 20,
-        @Header("Authorization") authorization: String = "Bearer $appKey",
     ): Messages
 
 

@@ -1,5 +1,6 @@
 package com.ozcomcn.compose_beginner.data.source
 
+import android.util.Log
 import com.ozcomcn.compose_beginner.data.model.ChatMessage
 import com.ozcomcn.compose_beginner.data.model.ChatQuery
 import com.ozcomcn.compose_beginner.data.model.Conversations
@@ -18,11 +19,12 @@ class ChatRemoteDataSource(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     fun chatMessage(query: ChatQuery): Flow<Resource<ChatMessage>> {
+        Log.d(TAG, "--->chatMessage：query=$query")
         return requestHandle(
             dispatcher = dispatcher
         ) {
             chatService.chatMessage(
-                appKey = appKey,
+                authorization = "Bearer $appKey",
                 query = query
             )
         }
@@ -37,8 +39,12 @@ class ChatRemoteDataSource(
         return requestHandle(
             dispatcher = dispatcher
         ) {
+            Log.d(
+                TAG,
+                "--->conversations：user=$user, lastId=$lastId, limit=$limit, sortBy=$sortBy"
+            )
             chatService.conversations(
-                appKey = appKey,
+                authorization = "Bearer $appKey",
                 user = user,
                 lastId = lastId,
                 limit = limit,
@@ -53,17 +59,26 @@ class ChatRemoteDataSource(
         first_id: String? = null,
         limit: Int = 20,
     ): Flow<Resource<Messages>> {
+        Log.d(
+            TAG,
+            "--->messages：user=$user, conversation_id=$conversation_id, first_id=$first_id, limit=$limit"
+        )
         return requestHandle(
             dispatcher = dispatcher
         ) {
             chatService.messages(
-                appKey = appKey,
+                authorization = "Bearer $appKey",
                 user = user,
                 conversation_id = conversation_id,
                 first_id = first_id,
                 limit = limit,
             )
         }
+    }
+
+
+    companion object {
+        private const val TAG = "ChatRemoteDataSource"
     }
 }
 

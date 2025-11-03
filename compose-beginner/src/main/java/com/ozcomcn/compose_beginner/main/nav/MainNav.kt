@@ -206,7 +206,7 @@ fun MainNav(
                 entryDecorators = listOf(
                     rememberSceneSetupNavEntryDecorator(),
                     rememberSavedStateNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
+//                    rememberViewModelStoreNavEntryDecorator(),
                 ),
                 backStack = navigator.backStack,
                 onBack = {

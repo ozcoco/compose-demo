@@ -28,7 +28,7 @@ object HttpModule {
     @Singleton
     @Provides
     fun providesDebugBaseUrl(): String {
-        return "http://192.168.31.234/"
+        return "http://ozcomcn.local/"
     }
 
     @ReleaseQualifier

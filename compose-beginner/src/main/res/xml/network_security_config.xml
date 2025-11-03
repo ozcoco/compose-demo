@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">192.168.31.234</domain>
         <domain includeSubdomains="false">192.168.101.182</domain>
+        <domain includeSubdomains="false">ozcomcn.local</domain>
     </domain-config>
 </network-security-config>

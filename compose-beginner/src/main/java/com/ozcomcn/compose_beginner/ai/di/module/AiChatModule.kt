@@ -20,7 +20,6 @@ import dagger.multibindings.IntoSet
 data object AIChat : BaseNavKey(
     "AIChat",
     icon = Icons.AutoMirrored.Filled.Chat,
-    isMainNavKey = false,
 )
 
 

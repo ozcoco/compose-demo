@@ -61,7 +61,9 @@ fun MainNav(
     val uiSate by vm.uiState.collectAsStateWithLifecycle()
     val isDarkTheme = uiSate.isDarkTheme
     val title = navigator.currentDestination()?.let { (it as BaseNavKey).title } ?: "主页"
-    val mainNavKeys = vm.navKeys.get().sortedBy {
+    val mainNavKeys = vm.navKeys.get().filter {
+        it is BaseNavKey && it.isMainNavKey
+    }.sortedBy {
         val navKey = it as BaseNavKey
         navKey.order
     }

@@ -54,7 +54,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ozcomcn.compose_beginner.R
 import com.ozcomcn.compose_beginner.ai.vm.AIViewModel
-import com.ozcomcn.compose_beginner.ai.vm.AiEvent
+import com.ozcomcn.compose_beginner.ai.vm.AiIntent
 import com.ozcomcn.compose_beginner.data.model.Message
 
 
@@ -67,9 +67,9 @@ fun AiChatScreen(
     modifier: Modifier = Modifier,
     vm: AIViewModel = hiltViewModel(),
 ) {
-    val onEvent: (AiEvent) -> Unit = { event -> vm.onEvent(event) }
-    val uiState by vm.uiState.collectAsStateWithLifecycle()
-    val msgList = uiState.messages.data
+    val onIntent: (AiIntent) -> Unit = { intent -> vm.onIntent(intent) }
+    val state by vm.state.collectAsStateWithLifecycle()
+    val msgList = state.messages.data
     Column {
         LazyColumn(
             reverseLayout = true,
@@ -88,7 +88,7 @@ fun AiChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            onEvent = onEvent
+            onIntent = onIntent
         )
     }
 }
@@ -177,7 +177,7 @@ fun AiRightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\
 @Preview
 @Composable
 fun AiInputContent(
-    modifier: Modifier = Modifier, onEvent: (AiEvent) -> Unit = {}
+    modifier: Modifier = Modifier, onIntent: (AiIntent) -> Unit = {}
 ) {
     var text by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
@@ -202,7 +202,7 @@ fun AiInputContent(
                     // 不显示光标
                     hasFocus = false
                     // 发送消息
-                    onEvent(AiEvent.SendMsg(text))
+                    onIntent(AiIntent.SendMsg(text))
                     // 清空输入框
                     text = ""
                 }) {

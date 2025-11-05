@@ -51,8 +51,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ozcomcn.compose_beginner.R
-import com.ozcomcn.compose_beginner.components.vm.ComponentsEvent
+import com.ozcomcn.compose_beginner.components.vm.ComponentsIntent
 import com.ozcomcn.compose_beginner.components.vm.ComponentsModel
 import com.ozcomcn.compose_beginner.data.model.Message
 
@@ -61,11 +62,16 @@ import com.ozcomcn.compose_beginner.data.model.Message
 fun TextFieldsScreen(
     vm: ComponentsModel = hiltViewModel()
 ) {
-    val onEvent = { event: ComponentsEvent ->
-        vm.onEvent(event)
+    val onIntent = { intent: ComponentsIntent ->
+        vm.onIntent(intent)
     }
-    val uiState = vm.uiState
-    val msgList = uiState.messages.data
+    val state by vm.state.collectAsStateWithLifecycle()
+    val msgList = state.messages.data
+    LaunchedEffect(vm) {
+        // 获取会话列表
+        onIntent(ComponentsIntent.GetConversations())
+        Log.d("TextFieldsScreen", "--->LaunchedEffect: 获取会话列表")
+    }
     Column {
         LazyColumn(
             reverseLayout = true,
@@ -84,13 +90,8 @@ fun TextFieldsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            onEvent = onEvent
+            onIntent = onIntent
         )
-    }
-    LaunchedEffect(uiState) {
-        // 获取会话列表
-        vm.getConversations()
-        Log.d("TextFieldsScreen", "--->LaunchedEffect: 获取会话列表")
     }
 }
 
@@ -193,7 +194,7 @@ fun RightChatItem(message: Message = Message(text = AnnotatedString("Helloxxx\nx
 @Preview
 @Composable
 fun InputContent(
-    modifier: Modifier = Modifier, onEvent: (ComponentsEvent) -> Unit = {}
+    modifier: Modifier = Modifier, onIntent: (ComponentsIntent) -> Unit = {}
 ) {
     var text by remember { mutableStateOf("") }
     var isRecording by remember { mutableStateOf(false) }
@@ -218,7 +219,7 @@ fun InputContent(
                     // 不显示光标
                     hasFocus = false
                     // 发送消息
-                    onEvent(ComponentsEvent.SendMsg(text))
+                    onIntent(ComponentsIntent.SendMsg(text))
                     // 清空输入框
                     text = ""
                 }) {

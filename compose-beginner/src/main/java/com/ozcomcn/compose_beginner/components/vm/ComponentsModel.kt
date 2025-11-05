@@ -1,9 +1,6 @@
 package com.ozcomcn.compose_beginner.components.vm
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
@@ -25,7 +22,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class ComponentsUiState(
+data class ComponentsState(
     var isDark: Boolean = false,
     var answer: String = "",
     var conversationId: String = "",
@@ -33,18 +30,23 @@ data class ComponentsUiState(
     var messages: Messages = Messages(emptyList(), false, 0),
 )
 
-sealed interface ComponentsEvent {
-    data class NavigateTo(val destination: NavKey) : ComponentsEvent
-    data class SendMsg(val query: String) : ComponentsEvent
+sealed interface ComponentsIntent {
+    data class NavigateTo(val destination: NavKey) : ComponentsIntent
+    data class SendMsg(val query: String) : ComponentsIntent
+    data class GetConversations(val user: String = "") : ComponentsIntent
+    data class GetMessages(val conversationId: String) : ComponentsIntent
 }
 
+sealed interface ComponentsEffect {
+    data class NavigateTo(val destination: NavKey) : ComponentsEffect
+}
 
 @HiltViewModel
 class ComponentsModel @Inject constructor(
     @DebugUserQualifier private val user: String,
     private val chatRepository: ChatRepository,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel() {
+) : BaseViewModel<ComponentsIntent, ComponentsState, ComponentsEffect>() {
 
     @ComponentsNavQualifier
     @Inject
@@ -53,9 +55,6 @@ class ComponentsModel @Inject constructor(
     @MainNavQualifier
     @Inject
     lateinit var navigator: Navigator
-
-    var uiState by mutableStateOf(ComponentsUiState())
-        private set
 
     // 聊天任务
     private var chatJob: Job? = null
@@ -73,6 +72,40 @@ class ComponentsModel @Inject constructor(
 //        getConversations()
     }
 
+    override fun initState(): ComponentsState = ComponentsState()
+
+    override fun onCleared() {
+        super.onCleared()
+        conversationsJob?.cancel()
+        messagesJob?.cancel()
+        chatJob?.cancel()
+    }
+
+    override fun onIntent(intent: ComponentsIntent) {
+        when (intent) {
+            is ComponentsIntent.NavigateTo -> {
+                // 执行页面导航操作
+                navigator.goTo(intent.destination)
+            }
+
+            is ComponentsIntent.SendMsg -> {
+                // 发送消息操作
+                sendMsg(intent.query)
+            }
+
+            is ComponentsIntent.GetConversations -> {
+                // 获取会话列表操作
+                getConversations()
+            }
+
+            is ComponentsIntent.GetMessages -> {
+                // 获取消息列表操作
+                getMessages(intent.conversationId)
+            }
+        }
+    }
+
+
     /**
      * 发送聊天消息并处理响应结果
      * @param query 用户输入的查询字符串
@@ -89,7 +122,7 @@ class ComponentsModel @Inject constructor(
             val query = ChatQuery(
                 user = user,
                 query = query,
-                conversation_id = uiState.conversationId
+                conversation_id = state.value.conversationId
             )
 
             // 发送聊天消息并处理不同状态的响应
@@ -101,9 +134,11 @@ class ComponentsModel @Inject constructor(
                 }
             }.collect {
                 // 更新UI状态中的回答内容
-                uiState = uiState.copy(answer = it)
+                updateState {
+                    copy(answer = it)
+                }
                 // 获取该会话的消息列表
-                getMessages(uiState.conversationId)
+                getMessages(state.value.conversationId)
             }
 
         }
@@ -132,11 +167,13 @@ class ComponentsModel @Inject constructor(
                         if (it.data.isNotEmpty()) {
                             // 获取第一个会话的ID
                             val conversationId = it.data[0].id
-                            // 更新UI状态中的当前会话ID
-                            uiState = uiState.copy(
-                                conversationId = conversationId,
-                                conversations = it
-                            )
+                            // 更新UI状态中的当前会话ID和会话列表
+                            updateState {
+                                copy(
+                                    conversationId = conversationId,
+                                    conversations = it
+                                )
+                            }
                             // 获取该会话的消息列表
                             getMessages(conversationId)
                         }
@@ -171,9 +208,11 @@ class ComponentsModel @Inject constructor(
                 // 更新UI状态中的消息列表
                 when {
                     it is Messages -> {
-                        uiState = uiState.copy(
-                            messages = it.copy(data = it.data.reversed())
-                        )
+                        updateState {
+                            copy(
+                                messages = it.copy(data = it.data.reversed())
+                            )
+                        }
                     }
 
                     else -> {
@@ -182,37 +221,6 @@ class ComponentsModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    /**
-     * 处理组件事件的回调函数
-     *
-     * @param event 需要处理的组件事件对象
-     */
-    fun onEvent(event: ComponentsEvent) {
-        viewModelScope.launch {
-            // 根据事件类型进行相应的处理
-            when (event) {
-                is ComponentsEvent.NavigateTo -> {
-                    // 执行页面导航操作
-                    navigator.goTo(event.destination)
-                }
-
-                is ComponentsEvent.SendMsg -> {
-                    // 发送消息操作
-                    sendMsg(event.query)
-                }
-            }
-        }
-    }
-
-
-    override fun onCleared() {
-        super.onCleared()
-        conversationsJob?.cancel()
-        messagesJob?.cancel()
-        chatJob?.cancel()
     }
 
 }

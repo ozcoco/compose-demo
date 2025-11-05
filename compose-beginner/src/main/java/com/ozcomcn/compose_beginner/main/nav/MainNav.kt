@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,13 +41,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.main.vm.MainEvent
+import com.ozcomcn.compose_beginner.main.vm.MainEffect
+import com.ozcomcn.compose_beginner.main.vm.MainIntent
 import com.ozcomcn.compose_beginner.main.vm.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -58,8 +59,8 @@ fun MainNav(
 ) {
     val navigator = vm.navigator
     val entryProviderBuilders = vm.entryProviderBuilders
-    val uiSate by vm.uiState.collectAsStateWithLifecycle()
-    val isDarkTheme = uiSate.isDarkTheme
+    val state by vm.state.collectAsStateWithLifecycle()
+    val isDarkTheme = state.isDarkTheme
     val title = navigator.currentDestination()?.let { (it as BaseNavKey).title } ?: "主页"
     val mainNavKeys = vm.navKeys.get().filter {
         it is BaseNavKey && it.isMainNavKey
@@ -69,7 +70,22 @@ fun MainNav(
     }
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val onEvent: (MainEvent) -> Unit = { event -> vm.onEvent(event) }
+    val onIntent: (MainIntent) -> Unit = { intent -> vm.onIntent(intent) }
+    LaunchedEffect(vm) {
+        // intent 处理
+    }
+    LaunchedEffect(vm) {
+        // effect 处理
+        vm.effect.collect { effect ->
+            when (effect) {
+                is MainEffect.NavigateTo -> {
+                    val navKey = effect.destination as BaseNavKey
+                    if (navKey.isMainNavKey) navigator.clearBackStack()
+                    navigator.goTo(navKey)
+                }
+            }
+        }
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -88,7 +104,7 @@ fun MainNav(
                                 )
                             }
                         }, label = { Text(itemTitle) }, selected = isSelected, onClick = {
-                            onEvent(MainEvent.NavigateTo(navKey))
+                            onIntent(MainIntent.NavigateTo(navKey))
                             scope.launch {
                                 drawerState.close()
                             }
@@ -139,7 +155,7 @@ fun MainNav(
                     }, navigationIcon = {
                         if (navigator.isBackable() && !(navigator.currentDestination() as BaseNavKey).isMainNavKey) {
                             IconButton(
-                                onClick = { onEvent(MainEvent.NavigateBack()) }) {
+                                onClick = { onIntent(MainIntent.NavigateBack()) }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                     contentDescription = "返回"
@@ -176,7 +192,7 @@ fun MainNav(
                                 )
                             }, onClick = {
                                 expanded = false
-                                onEvent(MainEvent.DarkThemeChange(!isDarkTheme))
+                                onIntent(MainIntent.DarkThemeChange(!isDarkTheme))
                             })
                             DropdownMenuItem(text = { Text("设置") }, leadingIcon = {
                                 Icon(
@@ -212,7 +228,7 @@ fun MainNav(
                 ),
                 backStack = navigator.backStack,
                 onBack = {
-                    onEvent(MainEvent.NavigateBack())
+                    onIntent(MainIntent.NavigateBack())
                 },
                 entryProvider = entryProvider {
                     if (entryProviderBuilders.isNotEmpty()) entryProviderBuilders.forEach { builder -> this.builder() }

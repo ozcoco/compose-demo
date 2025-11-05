@@ -3,7 +3,7 @@ package com.ozcomcn.compose_beginner.main
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ozcomcn.compose_beginner.base.activity.BaseActivity
 import com.ozcomcn.compose_beginner.main.nav.MainNav
 import com.ozcomcn.compose_beginner.main.vm.MainViewModel
@@ -18,7 +18,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val isDarkTheme = vm.uiState.collectAsState().value.isDarkTheme
+            val isDarkTheme = vm.state.collectAsStateWithLifecycle().value.isDarkTheme
             AppTheme(
                 dynamicColor = false,
                 darkTheme = isDarkTheme

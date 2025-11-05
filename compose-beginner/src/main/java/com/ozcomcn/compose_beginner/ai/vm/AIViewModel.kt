@@ -12,25 +12,25 @@ import com.ozcomcn.compose_beginner.data.model.Resource
 import com.ozcomcn.compose_beginner.di.qualifier.DebugUserQualifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class AiUiState(
+data class AiState(
     var user: String = "",
     var conversationId: String = "",
     var conversations: Conversations = Conversations(emptyList(), false, 0),
     var messages: Messages = Messages(emptyList(), false, 0),
 )
 
+sealed interface AiIntent {
+    data class UploadFiles(val files: List<String>) : AiIntent
+    data class SendMsg(val query: String) : AiIntent
+    data class GetChat(val conversationId: String) : AiIntent
+}
 
-sealed interface AiEvent {
-    data class UploadFiles(val files: List<String>) : AiEvent
-    data class SendMsg(val query: String) : AiEvent
-    data class GetChat(val conversationId: String) : AiEvent
+sealed interface AiEffect {
+    data class ShowError(val msg: String) : AiEffect
 }
 
 @HiltViewModel
@@ -38,19 +38,39 @@ class AIViewModel @Inject constructor(
     @DebugUserQualifier private val user: String,
     private val chatRepository: ChatRepository,
     private val savedStateHandle: SavedStateHandle,
-) : BaseViewModel() {
+) : BaseViewModel<AiIntent, AiState, AiEffect>() {
 
     private var conversationsJob: Job? = null
     private var messagesJob: Job? = null
     private var chatJob: Job? = null
 
-    private val _uiState = MutableStateFlow(
-        AiUiState(
-            user = user,
-        )
-    )
-    val uiState = _uiState.asStateFlow()
+    override fun initState(): AiState = AiState(user = user)
 
+    override fun onIntent(intent: AiIntent) {
+        when (intent) {
+            is AiIntent.UploadFiles -> {
+                // 上传文件操作
+            }
+
+            is AiIntent.SendMsg -> {
+                // 发送消息操作
+                sendMsg(intent.query)
+            }
+
+            is AiIntent.GetChat -> {
+                // 切换到指定会话操作
+                updateState { copy(conversationId = intent.conversationId) }
+                getMessages(intent.conversationId)
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        chatJob?.cancel()
+        messagesJob?.cancel()
+        conversationsJob?.cancel()
+    }
 
     /**
      * 发送聊天消息并处理响应结果
@@ -59,16 +79,14 @@ class AIViewModel @Inject constructor(
     fun sendMsg(query: String) {
         // 如果查询字符串为空白则直接返回
         if (query.isBlank()) return
-
         // 取消之前的聊天任务
         chatJob?.cancel()
-
         // 启动新的聊天任务
         chatJob = viewModelScope.launch {
             val query = ChatQuery(
                 user = user,
                 query = query,
-                conversation_id = _uiState.value.conversationId,
+                conversation_id = state.value.conversationId,
             )
 
             // 发送聊天消息并处理不同状态的响应
@@ -80,7 +98,7 @@ class AIViewModel @Inject constructor(
                 }
             }.collect {
                 // 获取该会话的消息列表
-                getMessages(_uiState.value.conversationId)
+                getMessages(state.value.conversationId)
             }
 
         }
@@ -107,9 +125,10 @@ class AIViewModel @Inject constructor(
                 when {
                     it is Conversations -> {
                         if (it.data.isNotEmpty()) {
-                            // 更新UI状态中的当前会话ID
-                            _uiState.update { state ->
-                                state.copy(
+                            // 更新UI状态中的当前会话ID为第一个会话ID
+                            updateState {
+                                copy(
+                                    conversationId = it.data.first().id,
                                     conversations = it
                                 )
                             }
@@ -132,7 +151,7 @@ class AIViewModel @Inject constructor(
         messagesJob = viewModelScope.launch {
             // 获取会话消息列表并处理不同状态的响应
             chatRepository.messages(
-                user = _uiState.value.user,
+                user = state.value.user,
                 conversation_id = conversationId,
                 limit = 100,
             ).map {
@@ -145,8 +164,8 @@ class AIViewModel @Inject constructor(
                 // 更新UI状态中的消息列表
                 when {
                     it is Messages -> {
-                        _uiState.update { state ->
-                            state.copy(
+                        updateState {
+                            copy(
                                 messages = it.copy(data = it.data.reversed())
                             )
                         }
@@ -158,36 +177,6 @@ class AIViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    fun onEvent(event: AiEvent) {
-        viewModelScope.launch {
-            when (event) {
-                is AiEvent.UploadFiles -> {
-                    // 上传文件操作
-                }
-
-                is AiEvent.SendMsg -> {
-                    // 发送消息操作
-                    sendMsg(event.query)
-                }
-
-                is AiEvent.GetChat -> {
-                    // 切换到指定会话操作
-                    _uiState.value.conversationId = event.conversationId
-                    getMessages(event.conversationId)
-                }
-            }
-        }
-    }
-
-
-    override fun onCleared() {
-        super.onCleared()
-        chatJob?.cancel()
-        messagesJob?.cancel()
-        conversationsJob?.cancel()
     }
 
 }

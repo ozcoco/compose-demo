@@ -44,9 +44,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ozcomcn.compose_beginner.ai.di.module.AIChat
 import com.ozcomcn.compose_beginner.ai.vm.AIViewModel
-import com.ozcomcn.compose_beginner.ai.vm.AiEvent
+import com.ozcomcn.compose_beginner.ai.vm.AiIntent
 import com.ozcomcn.compose_beginner.data.model.Conversations
-import com.ozcomcn.compose_beginner.main.vm.MainEvent
+import com.ozcomcn.compose_beginner.main.vm.MainIntent
 import com.ozcomcn.compose_beginner.main.vm.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -58,9 +58,9 @@ fun AiScreen(
     mainVM: MainViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
-    val onEvent: (AiEvent) -> Unit = { event -> vm.onEvent(event) }
-    val onMainEvent: (MainEvent) -> Unit = { event -> mainVM.onEvent(event) }
-    val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val onIntent: (AiIntent) -> Unit = { intent -> vm.onIntent(intent) }
+    val onMainIntent: (MainIntent) -> Unit = { intent -> mainVM.onIntent(intent) }
+    val state by vm.state.collectAsStateWithLifecycle()
     val nav = remember(vm) {
         listOf(
             Triple(
@@ -78,9 +78,9 @@ fun AiScreen(
         listOf(
             @Composable {
                 AiChatContent(
-                    conversations = uiState.conversations,
-                    onEvent = onEvent,
-                    onMainEvent = onMainEvent,
+                    conversations = state.conversations,
+                    onEvent = onIntent,
+                    onMainEvent = onMainIntent,
                     modifier = Modifier.fillMaxSize()
                 )
             },
@@ -139,7 +139,7 @@ fun AiScreen(
             }
         }
     }
-    LaunchedEffect(uiState) {
+    LaunchedEffect(state) {
         // 获取会话列表
         vm.getConversations()
         Log.d("AiScreen", "--->LaunchedEffect: 获取会话列表")
@@ -150,8 +150,8 @@ fun AiScreen(
 @Composable
 fun AiChatContent(
     conversations: Conversations,
-    onEvent: (AiEvent) -> Unit = {},
-    onMainEvent: (MainEvent) -> Unit = {},
+    onEvent: (AiIntent) -> Unit = {},
+    onMainEvent: (MainIntent) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
@@ -171,16 +171,16 @@ fun AiChatContent(
 @Composable
 fun ConversationItem(
     conversation: Conversations.Data,
-    onEvent: (AiEvent) -> Unit = {},
-    onMainEvent: (MainEvent) -> Unit,
+    onEvent: (AiIntent) -> Unit = {},
+    onMainEvent: (MainIntent) -> Unit,
     modifier: Modifier
 ) {
     Row(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .clickable {
-                onEvent(AiEvent.GetChat(conversation.id))
-                onMainEvent(MainEvent.NavigateTo(AIChat))
+                onEvent(AiIntent.GetChat(conversation.id))
+                onMainEvent(MainIntent.NavigateTo(AIChat))
             }
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

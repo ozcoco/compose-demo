@@ -44,6 +44,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ozcomcn.compose_beginner.ai.di.module.AIChat
 import com.ozcomcn.compose_beginner.ai.vm.AIViewModel
+import com.ozcomcn.compose_beginner.ai.vm.AiEffect
 import com.ozcomcn.compose_beginner.ai.vm.AiIntent
 import com.ozcomcn.compose_beginner.data.model.Conversations
 import com.ozcomcn.compose_beginner.main.vm.MainIntent
@@ -98,6 +99,20 @@ fun AiScreen(
     }
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { nav.size }
+    LaunchedEffect(vm) {
+        // 获取会话列表
+        onIntent(AiIntent.GetConversations)
+        Log.d("AiScreen", "--->LaunchedEffect: 获取会话列表")
+    }
+    LaunchedEffect(vm) {
+        vm.effect.collect { effect ->
+            when (effect) {
+                is AiEffect.ShowError -> {
+                    // 显示错误信息
+                }
+            }
+        }
+    }
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -138,11 +153,6 @@ fun AiScreen(
                 selectedIndex = page
             }
         }
-    }
-    LaunchedEffect(state) {
-        // 获取会话列表
-        vm.getConversations()
-        Log.d("AiScreen", "--->LaunchedEffect: 获取会话列表")
     }
 }
 

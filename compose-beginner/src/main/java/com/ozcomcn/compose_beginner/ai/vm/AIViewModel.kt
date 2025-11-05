@@ -27,6 +27,7 @@ sealed interface AiIntent {
     data class UploadFiles(val files: List<String>) : AiIntent
     data class SendMsg(val query: String) : AiIntent
     data class GetChat(val conversationId: String) : AiIntent
+    object GetConversations : AiIntent
 }
 
 sealed interface AiEffect {
@@ -46,6 +47,13 @@ class AIViewModel @Inject constructor(
 
     override fun initState(): AiState = AiState(user = user)
 
+    override fun onCleared() {
+        super.onCleared()
+        chatJob?.cancel()
+        messagesJob?.cancel()
+        conversationsJob?.cancel()
+    }
+
     override fun onIntent(intent: AiIntent) {
         when (intent) {
             is AiIntent.UploadFiles -> {
@@ -62,14 +70,12 @@ class AIViewModel @Inject constructor(
                 updateState { copy(conversationId = intent.conversationId) }
                 getMessages(intent.conversationId)
             }
-        }
-    }
 
-    override fun onCleared() {
-        super.onCleared()
-        chatJob?.cancel()
-        messagesJob?.cancel()
-        conversationsJob?.cancel()
+            AiIntent.GetConversations -> {
+                // 获取会话列表操作
+                getConversations()
+            }
+        }
     }
 
     /**

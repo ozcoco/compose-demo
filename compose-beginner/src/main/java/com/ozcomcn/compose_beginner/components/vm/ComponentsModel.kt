@@ -33,7 +33,7 @@ data class ComponentsState(
 sealed interface ComponentsIntent {
     data class NavigateTo(val destination: NavKey) : ComponentsIntent
     data class SendMsg(val query: String) : ComponentsIntent
-    data class GetConversations(val user: String = "") : ComponentsIntent
+    object GetConversations : ComponentsIntent
     data class GetMessages(val conversationId: String) : ComponentsIntent
 }
 

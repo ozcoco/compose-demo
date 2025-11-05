@@ -69,7 +69,7 @@ fun TextFieldsScreen(
     val msgList = state.messages.data
     LaunchedEffect(vm) {
         // 获取会话列表
-        onIntent(ComponentsIntent.GetConversations())
+        onIntent(ComponentsIntent.GetConversations)
         Log.d("TextFieldsScreen", "--->LaunchedEffect: 获取会话列表")
     }
     Column {

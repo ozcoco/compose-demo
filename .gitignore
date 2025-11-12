@@ -18,3 +18,4 @@ local.properties
 /.idea/deviceManager.xml
 /.idea/appInsightsSettings.xml
 /.idea/studiobot.xml
+/compose-beginner/src/main/cpp/build

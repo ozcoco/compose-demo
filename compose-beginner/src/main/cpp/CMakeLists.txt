@@ -8,6 +8,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 message("--->项目名称: ${CMAKE_PROJECT_NAME}")
 message("--->CMake版本: ${CMAKE_VERSION}")
 
+set(CMAKE_CXX_STANDARD 17)
+
 # llama.cpp
 # 启用 Vulkan 支持 —— 关键！
 add_compile_definitions(GGML_VULKAN=1)
@@ -18,11 +20,12 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         llama
+        #        common
         ggml
         vulkan
         android
         log
-#        pthread
+        #        pthread
         z
         m)
 

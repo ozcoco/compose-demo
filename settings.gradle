@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "ModellBox"
 //include ':app'
 include ':compose-beginner'
+include ':llama'
+include ':llamarun'

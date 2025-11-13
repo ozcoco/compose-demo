@@ -32,6 +32,8 @@ sealed interface AiIntent {
 
 sealed interface AiEffect {
     data class ShowError(val msg: String) : AiEffect
+    object Refreshing : AiEffect
+    object Refreshed : AiEffect
 }
 
 @HiltViewModel
@@ -122,9 +124,23 @@ class AIViewModel @Inject constructor(
             // 获取用户会话列表并处理不同状态的响应
             chatRepository.conversations(user).map {
                 when (it) {
-                    is Resource.Loading -> "Loading..."
-                    is Resource.Success -> it.data
-                    is Resource.Error -> it.msg
+                    is Resource.Loading -> {
+                        // 显示刷新状态
+                        postEffect { AiEffect.Refreshing }
+                        "Loading..."
+                    }
+
+                    is Resource.Success -> {
+                        // 显示刷新完成状态
+                        postEffect { AiEffect.Refreshed }
+                        it.data
+                    }
+
+                    is Resource.Error -> {
+                        // 显示错误信息
+                        postEffect { AiEffect.ShowError(it.msg) }
+                        it.msg
+                    }
                 }
             }.collect {
                 // 更新UI状态中的会话列表

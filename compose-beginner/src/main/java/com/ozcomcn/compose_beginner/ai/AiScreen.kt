@@ -23,15 +23,20 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -110,6 +115,8 @@ fun AiScreen(
                 is AiEffect.ShowError -> {
                     // 显示错误信息
                 }
+
+                else -> {}
             }
         }
     }
@@ -156,24 +163,60 @@ fun AiScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AiChatContent(
     conversations: Conversations,
     onEvent: (AiIntent) -> Unit = {},
     onMainEvent: (MainIntent) -> Unit = {},
     modifier: Modifier = Modifier,
+    vm: AIViewModel = hiltViewModel(),
 ) {
-    LazyColumn(modifier = modifier) {
-        items(conversations.data) { item ->
-            ConversationItem(
-                conversation = item,
-                onEvent = onEvent,
-                onMainEvent = onMainEvent,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullToRefreshState = rememberPullToRefreshState()
+    val onRefresh: () -> Unit = {
+        // 获取会话列表
+        onEvent(AiIntent.GetConversations)
+    }
+    LaunchedEffect(vm) {
+        vm.effect.collect { effect ->
+            when (effect) {
+                is AiEffect.Refreshing -> {
+                    isRefreshing = true
+                }
+
+                is AiEffect.Refreshed -> {
+                    isRefreshing = false
+                }
+
+                else -> {}
+            }
+        }
+    }
+    PullToRefreshBox(
+        modifier = modifier.fillMaxSize(),
+        state = pullToRefreshState,
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        indicator = {
+            PullToRefreshDefaults.LoadingIndicator(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
             )
+        },
+    ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(conversations.data) { item ->
+                ConversationItem(
+                    conversation = item,
+                    onEvent = onEvent,
+                    onMainEvent = onMainEvent,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                )
+            }
         }
     }
 }

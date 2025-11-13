@@ -3,9 +3,8 @@ package com.ozcomcn.compose_beginner.layouts.di.module
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Layers
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.layouts.LayoutScreen
 import com.ozcomcn.compose_beginner.layouts.di.quelifier.LayoutsNavQualifier
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
@@ -42,7 +41,7 @@ interface LayoutsModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<Layouts> {
                 LayoutScreen()
             }

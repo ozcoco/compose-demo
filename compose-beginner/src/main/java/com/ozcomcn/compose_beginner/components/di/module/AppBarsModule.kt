@@ -1,7 +1,6 @@
 package com.ozcomcn.compose_beginner.components.di.module
 
-import androidx.navigation3.runtime.entry
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.components.AppBarsScreen
 import com.ozcomcn.compose_beginner.components.di.qualifier.ComponentsNavQualifier
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
@@ -37,7 +36,7 @@ interface AppBarsModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<AppBars> {
                 AppBarsScreen()
             }

@@ -3,11 +3,10 @@ package com.ozcomcn.compose_beginner.ai.di.module
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.ai.AiChatScreen
 import com.ozcomcn.compose_beginner.ai.di.quelifier.AINavQualifier
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import dagger.Binds
 import dagger.Module
@@ -41,7 +40,7 @@ interface AIChatModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<AIChat> {
                 AiChatScreen()
             }

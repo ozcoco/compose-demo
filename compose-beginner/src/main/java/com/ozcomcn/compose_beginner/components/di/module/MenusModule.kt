@@ -1,8 +1,7 @@
 package com.ozcomcn.compose_beginner.components.di.module
 
 import androidx.compose.material3.Text
-import androidx.navigation3.runtime.entry
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.components.di.qualifier.ComponentsNavQualifier
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
 import dagger.Binds
@@ -38,7 +37,7 @@ interface MenusModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<Menus> {
                 Text(it.title)
             }

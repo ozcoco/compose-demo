@@ -3,9 +3,8 @@ package com.ozcomcn.compose_beginner.text.di.module
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TextFields
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import com.ozcomcn.compose_beginner.text.TextScreen
 import com.ozcomcn.compose_beginner.text.di.quelifier.TextNavQualifier
@@ -43,7 +42,7 @@ interface TextModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<Text> {
                 TextScreen()
             }

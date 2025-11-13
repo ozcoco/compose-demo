@@ -1,8 +1,7 @@
 package com.ozcomcn.compose_beginner.components.di.module
 
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.components.TextFieldsScreen
 import com.ozcomcn.compose_beginner.components.di.qualifier.ComponentsNavQualifier
 import dagger.Binds
@@ -38,7 +37,7 @@ interface TextFieldsModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<TextFields> {
                 TextFieldsScreen()
             }

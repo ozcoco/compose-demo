@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.base.nav.Navigator
 import com.ozcomcn.compose_beginner.base.vm.BaseViewModel
 import com.ozcomcn.compose_beginner.data.AppSettingRepository
@@ -31,7 +31,7 @@ sealed interface MainEffect {
 @HiltViewModel
 class MainViewModel @Inject constructor(
     val savedStateHandle: SavedStateHandle,
-    val entryProviderBuilders: Set<@JvmSuppressWildcards EntryProviderInstaller>,
+    val entryProviderBuilders: Set<@JvmSuppressWildcards EntryProviderScope>,
     val appSettingRepository: AppSettingRepository
 ) : BaseViewModel<MainIntent, MainState, MainEffect>() {
 

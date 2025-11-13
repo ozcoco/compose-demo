@@ -3,9 +3,8 @@ package com.ozcomcn.compose_beginner.theme.di.module
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Style
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import com.ozcomcn.compose_beginner.theme.ThemeScreen
 import com.ozcomcn.compose_beginner.theme.di.quelifier.ThemeNavQualifier
@@ -43,7 +42,7 @@ interface ThemeModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<Theme> {
                 ThemeScreen()
             }

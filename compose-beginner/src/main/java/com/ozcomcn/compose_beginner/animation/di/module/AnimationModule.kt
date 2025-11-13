@@ -3,11 +3,10 @@ package com.ozcomcn.compose_beginner.animation.di.module
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entry
 import com.ozcomcn.compose_beginner.animation.AnimationScreen
 import com.ozcomcn.compose_beginner.animation.di.quelifier.AnimationNavQualifier
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
-import com.ozcomcn.compose_beginner.base.nav.EntryProviderInstaller
+import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import dagger.Binds
 import dagger.Module
@@ -43,7 +42,7 @@ interface AnimationModule {
         @ViewModelScoped
         @IntoSet
         @Provides
-        fun providesEntryProviderInstaller(): EntryProviderInstaller = {
+        fun providesEntryProviderInstaller(): EntryProviderScope = {
             entry<Animation> {
                 AnimationScreen()
             }

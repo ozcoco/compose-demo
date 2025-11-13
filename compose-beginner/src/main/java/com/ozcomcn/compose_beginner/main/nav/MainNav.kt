@@ -42,9 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
 import com.ozcomcn.compose_beginner.main.vm.MainEffect
 import com.ozcomcn.compose_beginner.main.vm.MainIntent
@@ -221,11 +219,6 @@ fun MainNav(
                     slideInHorizontally(initialOffsetX = { -it }) togetherWith slideOutHorizontally(
                         targetOffsetX = { it })
                 },
-                entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSavedStateNavEntryDecorator(),
-//                    rememberViewModelStoreNavEntryDecorator(),
-                ),
                 backStack = navigator.backStack,
                 onBack = {
                     onIntent(MainIntent.NavigateBack())

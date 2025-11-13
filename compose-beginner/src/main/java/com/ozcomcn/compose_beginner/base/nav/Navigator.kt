@@ -1,10 +1,10 @@
 package com.ozcomcn.compose_beginner.base.nav
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.navigation3.runtime.EntryProviderBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 
-typealias EntryProviderInstaller = EntryProviderBuilder<NavKey>.() -> Unit
+typealias EntryProviderScope = EntryProviderScope<NavKey>.() -> Unit
 
 open class Navigator(val startDestination: NavKey) {
 

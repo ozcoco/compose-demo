@@ -7,25 +7,30 @@ import com.ozcomcn.compose_beginner.base.nav.BaseNavKey
 import com.ozcomcn.compose_beginner.base.nav.EntryProviderScope
 import com.ozcomcn.compose_beginner.base.nav.Navigator
 import com.ozcomcn.compose_beginner.base.vm.BaseViewModel
+import com.ozcomcn.compose_beginner.data.AppSettingKeys
 import com.ozcomcn.compose_beginner.data.AppSettingRepository
 import com.ozcomcn.compose_beginner.main.di.qualifier.MainNavQualifier
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MainState(
     val isDarkTheme: Boolean,
+    val isUseLocalModel: Boolean,
 )
 
 sealed interface MainIntent {
     class NavigateBack : MainIntent
     data class NavigateTo(val destination: NavKey) : MainIntent
     data class DarkThemeChange(val isDarkTheme: Boolean) : MainIntent
+    data class UseLocalModel(val isUseLocalModel: Boolean) : MainIntent
 }
 
 sealed interface MainEffect {
     data class NavigateTo(val destination: NavKey) : MainEffect
+    object UseLocalModelChange : MainEffect
 }
 
 @HiltViewModel
@@ -45,16 +50,24 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            appSettingRepository.isDarkTheme().collect { isDarkTheme ->
-                updateState {
-                    copy(isDarkTheme = isDarkTheme)
+            appSettingRepository.isDarkTheme()
+                .combine(appSettingRepository.isUseLocalModel()) { isDarkTheme, isUseLocalModel ->
+                    MainState(isDarkTheme, isUseLocalModel)
+                }.collect { mainState ->
+                    updateState {
+                        copy(
+                            isDarkTheme = mainState.isDarkTheme,
+                            isUseLocalModel = mainState.isUseLocalModel
+                        )
+                    }
                 }
-            }
         }
     }
 
     override fun initState(): MainState = MainState(
-        isDarkTheme = savedStateHandle.get<Boolean>("isDarkTheme") ?: false
+        isDarkTheme = savedStateHandle.get<Boolean>(AppSettingKeys.IS_DARK_THEME.name) ?: false,
+        isUseLocalModel = savedStateHandle.get<Boolean>(AppSettingKeys.IS_USE_LOCAL_MODEL.name)
+            ?: false,
     )
 
     override fun onIntent(intent: MainIntent) {
@@ -73,12 +86,22 @@ class MainViewModel @Inject constructor(
                 updateState {
                     copy(isDarkTheme = intent.isDarkTheme)
                 }
-                savedStateHandle["isDarkTheme"] = intent.isDarkTheme
+                savedStateHandle[AppSettingKeys.IS_DARK_THEME.name] = intent.isDarkTheme
                 viewModelScope.launch {
                     appSettingRepository.setDarkTheme(intent.isDarkTheme)
                 }
             }
 
+            is MainIntent.UseLocalModel -> {
+                updateState {
+                    copy(isUseLocalModel = intent.isUseLocalModel)
+                }
+                savedStateHandle[AppSettingKeys.IS_USE_LOCAL_MODEL.name] = intent.isUseLocalModel
+                viewModelScope.launch {
+                    appSettingRepository.setUseLocalModel(intent.isUseLocalModel)
+                }
+                postEffect { MainEffect.UseLocalModelChange }
+            }
         }
     }
 }

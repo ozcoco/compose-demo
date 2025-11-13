@@ -42,6 +42,9 @@ workManager = "2.11.0"
 appStartup = "1.2.0"
 # paging
 paging = "3.3.6"
+material3Version = "1.4.0"
+ui = "1.9.4"
+foundationLayout = "1.9.4"
 
 
 [libraries]
@@ -113,6 +116,9 @@ appStartup = { group = "androidx.startup", name = "startup-runtime", version.ref
 # paging3
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 #
 
